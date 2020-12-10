@@ -57,7 +57,7 @@ def build_wBiFPN(features, num_channels, id, freeze_bn=False):
         # P6_in = BatchNormalization(freeze=freeze_bn, name='resample_p6/bn')(P6_in)
         P6_in = layers.MaxPooling2D(pool_size=3, strides=2, padding='same', name='resample_p6/maxpool')(P6_in)
         P7_in = layers.MaxPooling2D(pool_size=3, strides=2, padding='same', name='resample_p7/maxpool')(P6_in)
-        P7_U = layers.Conv2DTranspose(2, 2)(P7_in)
+        P7_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P7_in)
         P6_td = wBiFPNAdd(name=f'fpn_cells/cell_{id}/fnode0/add')([P6_in, P7_U])
         P6_td = layers.Activation(lambda x: tf.nn.swish(x))(P6_td)
         P6_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -67,7 +67,7 @@ def build_wBiFPN(features, num_channels, id, freeze_bn=False):
         P5_in_1 = layers.BatchNormalization(momentum=MOMENTUM, epsilon=EPSILON,
                                             name=f'fpn_cells/cell_{id}/fnode1/resample_0_2_6/bn')(P5_in_1)
         # P5_in_1 = BatchNormalization(freeze=freeze_bn, name=f'fpn_cells/cell_{id}/fnode1/resample_0_2_6/bn')(P5_in_1)
-        P6_U = layers.Conv2DTranspose(2, 2)(P6_td)
+        P6_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P6_td)
         P5_td = wBiFPNAdd(name=f'fpn_cells/cell_{id}/fnode1/add')([P5_in_1, P6_U])
         P5_td = layers.Activation(lambda x: tf.nn.swish(x))(P5_td)
         P5_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -77,7 +77,7 @@ def build_wBiFPN(features, num_channels, id, freeze_bn=False):
         P4_in_1 = layers.BatchNormalization(momentum=MOMENTUM, epsilon=EPSILON,
                                             name=f'fpn_cells/cell_{id}/fnode2/resample_0_1_7/bn')(P4_in_1)
         # P4_in_1 = BatchNormalization(freeze=freeze_bn, name=f'fpn_cells/cell_{id}/fnode2/resample_0_1_7/bn')(P4_in_1)
-        P5_U = layers.Conv2DTranspose(2, 2)(P5_td)
+        P5_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P5_td)
         P4_td = wBiFPNAdd(name=f'fpn_cells/cell_{id}/fnode2/add')([P4_in_1, P5_U])
         P4_td = layers.Activation(lambda x: tf.nn.swish(x))(P4_td)
         P4_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -87,7 +87,7 @@ def build_wBiFPN(features, num_channels, id, freeze_bn=False):
         P3_in = layers.BatchNormalization(momentum=MOMENTUM, epsilon=EPSILON,
                                           name=f'fpn_cells/cell_{id}/fnode3/resample_0_0_8/bn')(P3_in)
         # P3_in = BatchNormalization(freeze=freeze_bn, name=f'fpn_cells/cell_{id}/fnode3/resample_0_0_8/bn')(P3_in)
-        P4_U = layers.Conv2DTranspose(2, 2)(P4_td)
+        P4_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P4_td)
         P3_out = wBiFPNAdd(name=f'fpn_cells/cell_{id}/fnode3/add')([P3_in, P4_U])
         P3_out = layers.Activation(lambda x: tf.nn.swish(x))(P3_out)
         P3_out = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -128,22 +128,22 @@ def build_wBiFPN(features, num_channels, id, freeze_bn=False):
 
     else:
         P3_in, P4_in, P5_in, P6_in, P7_in = features
-        P7_U = layers.Conv2DTranspose(2, 2)(P7_in)
+        P7_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P7_in)
         P6_td = wBiFPNAdd(name=f'fpn_cells/cell_{id}/fnode0/add')([P6_in, P7_U])
         P6_td = layers.Activation(lambda x: tf.nn.swish(x))(P6_td)
         P6_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
                                    name=f'fpn_cells/cell_{id}/fnode0/op_after_combine5')(P6_td)
-        P6_U = layers.Conv2DTranspose(2, 2)(P6_td)
+        P6_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P6_td)
         P5_td = wBiFPNAdd(name=f'fpn_cells/cell_{id}/fnode1/add')([P5_in, P6_U])
         P5_td = layers.Activation(lambda x: tf.nn.swish(x))(P5_td)
         P5_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
                                    name=f'fpn_cells/cell_{id}/fnode1/op_after_combine6')(P5_td)
-        P5_U = layers.Conv2DTranspose(2, 2)(P5_td)
+        P5_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P5_td)
         P4_td = wBiFPNAdd(name=f'fpn_cells/cell_{id}/fnode2/add')([P4_in, P5_U])
         P4_td = layers.Activation(lambda x: tf.nn.swish(x))(P4_td)
         P4_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
                                    name=f'fpn_cells/cell_{id}/fnode2/op_after_combine7')(P4_td)
-        P4_U = layers.Conv2DTranspose(2, 2)(P4_td)
+        P4_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P4_td)
         P3_out = wBiFPNAdd(name=f'fpn_cells/cell_{id}/fnode3/add')([P3_in, P4_U])
         P3_out = layers.Activation(lambda x: tf.nn.swish(x))(P3_out)
         P3_out = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -185,7 +185,7 @@ def build_BiFPN(features, num_channels, id, freeze_bn=False):
         # P6_in = BatchNormalization(freeze=freeze_bn, name='resample_p6/bn')(P6_in)
         P6_in = layers.MaxPooling2D(pool_size=3, strides=2, padding='same', name='resample_p6/maxpool')(P6_in)
         P7_in = layers.MaxPooling2D(pool_size=3, strides=2, padding='same', name='resample_p7/maxpool')(P6_in)
-        P7_U = layers.Conv2DTranspose(2, 2)(P7_in)
+        P7_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P7_in)
         P6_td = layers.Add(name=f'fpn_cells/cell_{id}/fnode0/add')([P6_in, P7_U])
         P6_td = layers.Activation(lambda x: tf.nn.swish(x))(P6_td)
         P6_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -195,7 +195,7 @@ def build_BiFPN(features, num_channels, id, freeze_bn=False):
         P5_in_1 = layers.BatchNormalization(momentum=MOMENTUM, epsilon=EPSILON,
                                             name=f'fpn_cells/cell_{id}/fnode1/resample_0_2_6/bn')(P5_in_1)
         # P5_in_1 = BatchNormalization(freeze=freeze_bn, name=f'fpn_cells/cell_{id}/fnode1/resample_0_2_6/bn')(P5_in_1)
-        P6_U = layers.Conv2DTranspose(2, 2)(P6_td)
+        P6_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P6_td)
         P5_td = layers.Add(name=f'fpn_cells/cell_{id}/fnode1/add')([P5_in_1, P6_U])
         P5_td = layers.Activation(lambda x: tf.nn.swish(x))(P5_td)
         P5_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -205,7 +205,7 @@ def build_BiFPN(features, num_channels, id, freeze_bn=False):
         P4_in_1 = layers.BatchNormalization(momentum=MOMENTUM, epsilon=EPSILON,
                                             name=f'fpn_cells/cell_{id}/fnode2/resample_0_1_7/bn')(P4_in_1)
         # P4_in_1 = BatchNormalization(freeze=freeze_bn, name=f'fpn_cells/cell_{id}/fnode2/resample_0_1_7/bn')(P4_in_1)
-        P5_U = layers.Conv2DTranspose(2, 2)(P5_td)
+        P5_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P5_td)
         P4_td = layers.Add(name=f'fpn_cells/cell_{id}/fnode2/add')([P4_in_1, P5_U])
         P4_td = layers.Activation(lambda x: tf.nn.swish(x))(P4_td)
         P4_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -215,7 +215,7 @@ def build_BiFPN(features, num_channels, id, freeze_bn=False):
         P3_in = layers.BatchNormalization(momentum=MOMENTUM, epsilon=EPSILON,
                                           name=f'fpn_cells/cell_{id}/fnode3/resample_0_0_8/bn')(P3_in)
         # P3_in = BatchNormalization(freeze=freeze_bn, name=f'fpn_cells/cell_{id}/fnode3/resample_0_0_8/bn')(P3_in)
-        P4_U = layers.Conv2DTranspose(2, 2)(P4_td)
+        P4_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P4_td)
         P3_out = layers.Add(name=f'fpn_cells/cell_{id}/fnode3/add')([P3_in, P4_U])
         P3_out = layers.Activation(lambda x: tf.nn.swish(x))(P3_out)
         P3_out = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
@@ -256,22 +256,22 @@ def build_BiFPN(features, num_channels, id, freeze_bn=False):
 
     else:
         P3_in, P4_in, P5_in, P6_in, P7_in = features
-        P7_U = layers.Conv2DTranspose(2, 2)(P7_in)
+        P7_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P7_in)
         P6_td = layers.Add(name=f'fpn_cells/cell_{id}/fnode0/add')([P6_in, P7_U])
         P6_td = layers.Activation(lambda x: tf.nn.swish(x))(P6_td)
         P6_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
                                    name=f'fpn_cells/cell_{id}/fnode0/op_after_combine5')(P6_td)
-        P6_U = layers.Conv2DTranspose(2, 2)(P6_td)
+        P6_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P6_td)
         P5_td = layers.Add(name=f'fpn_cells/cell_{id}/fnode1/add')([P5_in, P6_U])
         P5_td = layers.Activation(lambda x: tf.nn.swish(x))(P5_td)
         P5_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
                                    name=f'fpn_cells/cell_{id}/fnode1/op_after_combine6')(P5_td)
-        P5_U = layers.Conv2DTranspose(2, 2)(P5_td)
+        P5_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P5_td)
         P4_td = layers.Add(name=f'fpn_cells/cell_{id}/fnode2/add')([P4_in, P5_U])
         P4_td = layers.Activation(lambda x: tf.nn.swish(x))(P4_td)
         P4_td = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,
                                    name=f'fpn_cells/cell_{id}/fnode2/op_after_combine7')(P4_td)
-        P4_U = layers.Conv2DTranspose(2, 2)(P4_td)
+        P4_U = layers.Conv2DTranspose(1, (1,1), strides=(2,2))(P4_td)
         P3_out = layers.Add(name=f'fpn_cells/cell_{id}/fnode3/add')([P3_in, P4_U])
         P3_out = layers.Activation(lambda x: tf.nn.swish(x))(P3_out)
         P3_out = SeparableConvBlock(num_channels=num_channels, kernel_size=3, strides=1,

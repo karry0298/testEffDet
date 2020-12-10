@@ -299,10 +299,10 @@ def main(args=None):
     args = parse_args(args)
 
     # create the generators
-    train_generator, validation_generator = create_generators(args)
+    # train_generator, validation_generator = create_generators(args)
 
-    num_classes = train_generator.num_classes()
-    num_anchors = train_generator.num_anchors
+    # num_classes = train_generator.num_classes()
+    # num_anchors = train_generator.num_anchors
 
     # optionally choose specific GPU
     if args.gpu:
@@ -311,11 +311,11 @@ def main(args=None):
     # K.set_session(get_session())
 
     model, prediction_model = efficientdet(args.phi,
-                                           num_classes=num_classes,
-                                           num_anchors=num_anchors,
-                                           weighted_bifpn=args.weighted_bifpn,
-                                           freeze_bn=args.freeze_bn,
-                                           detect_quadrangle=args.detect_quadrangle
+                                           num_classes=20,
+                                           num_anchors=9,
+                                           weighted_bifpn=False,
+                                           freeze_bn=False,
+                                           detect_quadrangle=False
                                            )
     # load pretrained weights
     if args.snapshot:
