@@ -376,3 +376,31 @@ class FilterDetections(keras.layers.Layer):
         })
 
         return config
+
+
+
+
+class FilterDetections(keras.layers.Layer):
+    """
+    Keras layer for filtering detections using score threshold and NMS.
+    """
+
+    def __init__(
+            self,
+            nms=True,
+            class_specific_filter=True,
+            nms_threshold=0.5,
+            score_threshold=0.01,
+            max_detections=100,
+            parallel_iterations=32,
+            detect_quadrangle=False,
+            **kwargs
+    ):
+
+    def call(self, inputs):
+        
+        boxes = inputs[0] 
+        classification = inputs[1]
+
+        
+        return boxes , classification

@@ -466,8 +466,15 @@ def efficientdet(phi, num_classes=20, num_anchors=9, weighted_bifpn=False, freez
             score_threshold=score_threshold
         )([boxes, classification])
 
+
+    # testDetection = TestDetections()([boxes, classification])
+
     prediction_model = models.Model(inputs=[image_input], outputs=detections, name='efficientdet_p')
-    return model, prediction_model
+
+    testDetection = model.Model(inputs=[image_input], outputs=[boxes, classification] , name='efficientdet_testing')
+
+
+    return model, prediction_model , testDetection
 
 
 if __name__ == '__main__':
