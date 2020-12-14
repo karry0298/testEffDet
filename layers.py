@@ -147,6 +147,51 @@ def filter_detections(
         In case there are less than max_detections detections, the tensors are padded with -1's.
     """
 
+    def _filter_NMS_detections(scores_, labels_):
+        indices_ = tf.where(keras.backend.greater(scores_, score_threshold))
+
+        if nms:
+            # (num_score_keeps, 4)
+            filtered_boxes = tf.gather_nd(boxes, indices_)
+            # In [4]: scores = np.array([0.1, 0.5, 0.4, 0.2, 0.7, 0.2])
+            # In [5]: tf.greater(scores, 0.4)
+            # Out[5]: <tf.Tensor: id=2, shape=(6,), dtype=bool, numpy=array([False,  True, False, False,  True, False])>
+            # In [6]: tf.where(tf.greater(scores, 0.4))
+            # Out[6]:
+            # <tf.Tensor: id=7, shape=(2, 1), dtype=int64, numpy=
+            # array([[1],
+            #        [4]])>
+            #
+            # In [7]: tf.gather(scores, tf.where(tf.greater(scores, 0.4)))
+            # Out[7]:
+            # <tf.Tensor: id=15, shape=(2, 1), dtype=float64, numpy=
+            # array([[0.5],
+            #        [0.7]])>
+            filtered_scores = keras.backend.gather(scores_, indices_)[:, 0]
+
+            # perform NMS
+            # filtered_boxes = tf.concat([filtered_boxes[..., 1:2], filtered_boxes[..., 0:1],
+            #                             filtered_boxes[..., 3:4], filtered_boxes[..., 2:3]], axis=-1)
+            # nms_indices = tf.image.non_max_suppression(filtered_boxes, filtered_scores, max_output_size=max_detections,
+            #                                            iou_threshold=nms_threshold)
+
+            # filter indices based on NMS
+            # (num_score_nms_keeps, 1)
+            # indices_ = keras.backend.gather(indices_, nms_indices)
+
+
+        return [filtered_boxes, filtered_scores]
+
+        # add indices to list of all indices
+        # (num_score_nms_keeps, )
+        # labels_ = tf.gather_nd(labels_, indices_)
+        # # (num_score_nms_keeps, 2)
+        # indices_ = keras.backend.stack([indices_[:, 0], labels_], axis=1)
+
+        # return indices_
+
+
+
     def _filter_detections(scores_, labels_):
         # threshold based on score
         # (num_score_keeps, 1)
@@ -324,7 +369,16 @@ class FilterDetections(keras.layers.Layer):
                 parallel_iterations=self.parallel_iterations
             )
 
-        return outputs
+            nonNMS = tf.map_fn(
+                _filter_NMS_detections,
+                elems=[boxes, classification],
+                dtype=['float32', 'float32', 'int32'],
+                parallel_iterations=self.parallel_iterations
+            )
+
+
+
+        return outputs , nonNMS
 
     def compute_output_shape(self, input_shape):
         """
@@ -380,27 +434,27 @@ class FilterDetections(keras.layers.Layer):
 
 
 
-class FilterDetections(keras.layers.Layer):
-    """
-    Keras layer for filtering detections using score threshold and NMS.
-    """
+# class FilterDetections(keras.layers.Layer):
+#     """
+#     Keras layer for filtering detections using score threshold and NMS.
+#     """
 
-    def __init__(
-            self,
-            nms=True,
-            class_specific_filter=True,
-            nms_threshold=0.5,
-            score_threshold=0.01,
-            max_detections=100,
-            parallel_iterations=32,
-            detect_quadrangle=False,
-            **kwargs
-    ):
+#     def __init__(
+#             self,
+#             nms=True,
+#             class_specific_filter=True,
+#             nms_threshold=0.5,
+#             score_threshold=0.01,
+#             max_detections=100,
+#             parallel_iterations=32,
+#             detect_quadrangle=False,
+#             **kwargs
+#     ):
 
-    def call(self, inputs):
+#     def call(self, inputs):
         
-        boxes = inputs[0] 
-        classification = inputs[1]
+#         boxes = inputs[0] 
+#         classification = inputs[1]
 
         
-        return boxes , classification
+#         return boxes , classification

@@ -461,7 +461,7 @@ def efficientdet(phi, num_classes=20, num_anchors=9, weighted_bifpn=False, freez
             detect_quadrangle=True
         )([boxes, classification, regression[..., 4:8], regression[..., 8]])
     else:
-        detections = FilterDetections(
+        detections , nonNMS = FilterDetections(
             name='filtered_detections',
             score_threshold=score_threshold
         )([boxes, classification])
@@ -471,7 +471,7 @@ def efficientdet(phi, num_classes=20, num_anchors=9, weighted_bifpn=False, freez
 
     prediction_model = models.Model(inputs=[image_input], outputs=detections, name='efficientdet_p')
 
-    testDetection = model.Model(inputs=[image_input], outputs=[boxes, classification] , name='efficientdet_testing')
+    testDetection = model.Model(inputs=[image_input], outputs=nonNMS , name='efficientdet_testing')
 
 
     return model, prediction_model , testDetection
